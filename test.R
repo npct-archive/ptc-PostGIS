@@ -1,13 +1,22 @@
-library(RPostgreSQL)
-library(postGIStools)
+# Set Up the packages and connect to the database
+source("set-up.R")
 
-con <- dbConnect(PostgreSQL(), dbname = "d2u06to89nuqei", user = "mzcwtmyzmgalae",
-                 host = "ec2-107-22-246-250.compute-1.amazonaws.com",
-                 password = "UTv2BuwJUPuruhDqJthcngyyvO")
+#query the database
 
-countries <- get_postgis_query(con, "SELECT name, iso2, capital, population,
-                               translations, geom FROM country 
-                               WHERE population > 1000000",
-                               geom_name = "geom", hstore_name = "translations")
+query <- get_postgis_query(con, "SELECT id, geom, msoa11cd, msoa11nm FROM msoa WHERE id < 10",
+                               geom_name = "geom", hstore_name = NA_character_)
 
-class(countries)
+#disconnect from the database
+dbDisconnect(con)
+
+
+#plot the results
+plot(query)
+box()
+axis(1)
+axis(2)
+grid()
+
+
+
+
