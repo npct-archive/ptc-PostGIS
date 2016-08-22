@@ -13,5 +13,4 @@ library(rgeos)
 library(sp)
 library(DBI)
 
-#Connecto to the Database
-source("connect.R")
+
