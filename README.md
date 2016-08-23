@@ -1,5 +1,5 @@
 # ptc-PostGIS
-Test of using a PostGIS DB to store ptc data
+A shiny app test of using a PostGIS DB to store ptc data
 
 # Main Files
 
@@ -9,4 +9,4 @@ Installs necessary libaries etc
 
 connect.R
 
-COntains functions for connecting to the DB
+Contains functions for connecting to the DB the vesion in Github is incomeplete as it does not contain the necessay passwords to connect to the DB
