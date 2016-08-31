@@ -6,13 +6,10 @@ library(RColorBrewer)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("PTC using PostGIS"),
+  titlePanel("PCT using PostGIS"),
   
   # Show a plot of the generated distribution
-    mainPanel(
-      leafletOutput("mymap")
-      
-      #h1(bounds)
-    )
+  mainPanel(
+      leafletOutput("mymap", width = 800, height = 600)
   )
-)
+))

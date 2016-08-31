@@ -17,25 +17,51 @@ shinyServer(function(input, output) {
   })
 
   #Watch the bounds of the map as the user scrolls around
-  #the query the server for the MSOA that are within view
+  #the query_zone the server for the MSOA that are within view
   observe({
     mapbounds <- input$mymap_bounds
+    mapzoom <- input$mymap_zoom
     if(is.null(input$mymap_bounds)){
-        # no map bounds so do defult query
-        query <- "SELECT id, geom, code, name FROM msoa84 WHERE geom && ST_MakeEnvelope(-0.11, 51.4, -0.09, 51.5, 4326)"
-        answer <- askDB(query)
-      } else {
-
-        # have bounds so query the database
-        query2 <- paste0("SELECT id, geom, code, name FROM msoa84 WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
-        answer <- askDB(query2)
+        # no map bounds so do defult query_zone
+        query_zone <- "SELECT id, geom, code, name FROM msoa84 WHERE geom && ST_MakeEnvelope(-0.11, 51.45, -0.09, 51.5, 4326)"
+        answer_zone <- askDB(query_zone)
+    } 
+    else if(mapzoom >= 11 & mapzoom <= 13){
+        # Zomed out so show MSOA
+        query_zone <- paste0("SELECT id, geom, code, name FROM msoa84 WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_zone <- askDB(query_zone)
+        # also get centroids
+        query_centroid <- paste0("SELECT id, geom, code, name FROM msoa_centorid WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_centroid <- askDB(query_centroid)
     }
-    # plot msoa
+    else if(mapzoom >= 14 & mapzoom <= 16){
+        # Zomed in so show LSOA
+        query_zone <- paste0("SELECT id, geom, code, name FROM lsoa WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_zone <- askDB(query_zone)
+        # also get centroids
+        query_centroid <- paste0("SELECT id, geom, code, name FROM lsoa_centorid WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_centroid <- askDB(query_centroid)
+    }
+    else if(mapzoom >= 17){
+        # Zomed really in so show OA
+        query_zone <- paste0("SELECT id, geom, code, name FROM oa WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_zone <- askDB(query_zone)
+        # also get centroids
+        query_centroid <- paste0("SELECT id, geom, code, name FROM oa_centorid WHERE geom && ST_MakeEnvelope(",mapbounds$west,",",mapbounds$south,",",mapbounds$east,",",mapbounds$north,",4326)")
+        answer_centroid <- askDB(query_centroid)
+    }
+    else
+        # really zoomed out so render nothing
+        # no map bounds so do defult query_zone
+        query_zone <- "SELECT id, geom, code, name FROM msoa84 WHERE geom && ST_MakeEnvelope(-0.11, 51.45, -0.09, 51.5, 4326)"
+        answer_zone <- askDB(query_zone)
+    
+    # plot map
     proxy <- leafletProxy("mymap")
-      # remove old msoa layer
+      # remove old layers
       proxy %>% clearShapes()
-      #render new msoa layer
-      proxy %>%addPolygons(data = answer)
+      #render new layer
+      proxy %>%addPolygons(data = answer_zone)
   })
   
 })
