@@ -5,7 +5,8 @@ source("connect.R")
 
 # Start of Shiny Server Code
 shinyServer(function(input, output) {
-
+#colours
+#qpal <- colorQuantile("Blues", answer_zone$bicycle, n = 7)
 #Render Map
   output$mymap <- renderLeaflet({
     leaflet() %>%
