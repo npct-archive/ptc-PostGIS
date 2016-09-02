@@ -4,26 +4,49 @@
 # in the rest of the code. I alos makes sure that the
 # DB is not overloaded with unclosed connections
 
-#function 
-askDB <- function (sql){
+# get libraries and passwords
+source("set-up.R")
+
+
+#askDB_all - connect get info then disconnect - a basic function for connecting to the DB
+askDB_all <- function (sql){
   
-# Variables for Database connection
-dbname <- ""
-host <- ""
-user <- ""
-port <- ""
-password <- ""
+  # Connect to Database
+  con <- dbConnect(dbDriver("PostgreSQL"), dbname = dbname, user = user, host = host, password = password)
 
-# Connect to Database
-con <- dbConnect(dbDriver("PostgreSQL"), dbname = dbname, user = user, host = host, password = password)
+  # Query the database
+  result <- get_postgis_query(con, sql, geom_name = "geom", hstore_name = NA_character_)
 
-# Query the database
+  #disconnect from the database
+  dbDisconnect(con)
 
-result <- get_postgis_query(con, sql, geom_name = "geom", hstore_name = NA_character_)
+  #Return the result
+  return(result)
+}
 
-#disconnect from the database
-dbDisconnect(con)
+conDB <- function(){
+  #Connect to Database
+  con <- dbConnect(dbDriver("PostgreSQL"), dbname = dbname, user = user, host = host, password = password)
+}
 
-#Return the result
-return(result)
+#askDB - connect get info but don't disconnect - for when you are asking several things at once
+askDB <- function (sql){
+  # Connect to Database
+  con <- dbConnect(dbDriver("PostgreSQL"), dbname = dbname, user = user, host = host, password = password)
+  
+  # Query the database
+  result <- get_postgis_query(con, sql, geom_name = "geom", hstore_name = NA_character_)
+  
+  #disconnect from the database
+  dbDisconnect(con)
+  
+  #Return the result
+  return(result)
+}
+
+#disDB - disconnect tfrom DB
+disDB <- function (){
+
+  #disconnect from the database
+  dbDisconnect(con)
 }
